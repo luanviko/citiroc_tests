@@ -18,7 +18,7 @@ DYNAMIC_APP = $(APP)-dynamic
 all: $(APP)-dynamic 
 
 $(DYNAMIC_APP): list_devices.c	
-	$(CC) list_devices.c -o $(DYNAMIC_APP) $(CFLAGS) -lftd2xx $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS)
+	$(CC) list_devices.c -o $(DYNAMIC_APP) $(CFLAGS) -lftd2xx -llalusb20 $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS)
 	
 clean:
-	-rm -f *.o ; rm $(STATIC_APP); rm $(DYNAMIC_APP)
+	-rm -f *.o ; rm $(DYNAMIC_APP)
