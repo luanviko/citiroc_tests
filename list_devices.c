@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ftd2xx.h"
+// #include "LALUsb.h"
 
 // Following examples/Simple
 // provided by FTD2XX driver
@@ -12,9 +13,17 @@ int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberO
 
 // Main function
 int main() {
+
+    // FTD2XX variables
     FT_STATUS status;
     FT_DEVICE_LIST_INFO_NODE* deviceList;
     unsigned int numberOfDevices;
+
+    // LALUsb variables
+    int numberOfUSBDevices;
+
+    // Find CITIROC 1A device using FTD2XX libraries.
+    // Look into FTD2XX documentation for details. 
 
     // Find number of devices
     status = FT_CreateDeviceInfoList(&numberOfDevices);
@@ -32,17 +41,13 @@ int main() {
         return 1;
     }
 
-    // Print information about devices
-    if (status == FT_OK) {
-        printDevicesInfo(deviceList, &numberOfDevices);
-    }
+    // Print device information
+    printDevicesInfo(deviceList, &numberOfDevices);
 
-    // Find the device with the right info
-    if (status == FT_OK) {
-        // Try strstr if ID or vendor are string type.
-        // Try something else if hexadecimal.
-        // strstr(original)
-    }
+    // Try to communicate with USB now.
+    // Look for the LALUsb library documentation for details.
+
+    // numberOfUSBDevices = LALUSB_API.USB_GetNumberOfDevs();
 
 }
 

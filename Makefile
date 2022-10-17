@@ -13,13 +13,9 @@ CFLAGS = -Wall -Wextra
 DYNAMIC_LINK_OPTIONS := -Wl,-rpath /usr/local/lib
 
 APP = list_devices
-STATIC_APP = $(APP)-static
 DYNAMIC_APP = $(APP)-dynamic
 
-all: $(APP)-static $(APP)-dynamic 
-
-$(STATIC_APP): list_devices.c
-	$(CC) list_devices.c -o $(STATIC_APP) ../build/libftd2xx.a $(CFLAGS) $(DEPENDENCIES)
+all: $(APP)-dynamic 
 
 $(DYNAMIC_APP): list_devices.c	
 	$(CC) list_devices.c -o $(DYNAMIC_APP) $(CFLAGS) -lftd2xx $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS)

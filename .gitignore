@@ -1,0 +1,7 @@
+include/
+Makefile_static
+m.sh
+ftd2xx.h
+LALUsb.h
+list_devices-dynamic
+list_devices-static
