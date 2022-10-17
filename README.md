@@ -13,8 +13,8 @@ The following is based on the [FTD2XX documentation (pdf)](https://www.ftdichip.
 Please take your time to download and read it. 
 In the context of this library, a DWORD is an unsigned integer (4 bytes).
 Each of the FTD2XX methods will return a DWORD called FT_STATUS. 
-If the function worked as expected, then `FT_STATUS == FT_OK`, 
-but there are other values that you must pay attention to:
+If the function worked as expected, then `FT_STATUS == FT_OK == 0`. 
+These are the `FT_STATUS` values that you can encounter:
 ```
 FT_OK = 0
 FT_INVALID_HANDLE = 1
