@@ -19,6 +19,14 @@ int main() {
     FT_DEVICE_LIST_INFO_NODE* deviceList;
     unsigned int numberOfDevices;
 
+    FT_HANDLE temporaryHandle;
+    DWORD flags;
+    DWORD id;
+    DWORD type;
+    DWORD localID;
+    char serialNumber[1024];
+    char description[1024]; 
+
     // LALUsb variables
     int numberOfUSBDevices;
 
@@ -31,9 +39,18 @@ int main() {
     // Allocate memory for device info
     deviceList = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numberOfDevices);
 
+    
+    
+    // TOMORROW: TRY USING FT_GETDEVICEINFODETAIL
+    //           as on line 2218 de FTD2XX_NET.cs 
+
+
+
+
+
+
     // Fetch information about devices
     status = FT_GetDeviceInfoList(deviceList, &numberOfDevices);    
-    printf("%d %d\n", (int) status, (int) numberOfDevices);
 
     // Catch the exception
     if (status != FT_OK) {
@@ -42,13 +59,24 @@ int main() {
     }
 
     // Print device information
-    printDevicesInfo(deviceList, &numberOfDevices);
+    // printDevicesInfo(deviceList, &numberOfDevices);
 
+    if (numberOfDevices > 0) { 
+        status = FT_GetDeviceInfoDetail(1, &flags, &type, &id, &localID, serialNumber, description, temporaryHandle); 
+        if (status == FT_OK) {
+            printf("Serial number: %s", serialNumber);
+        }
+    } else {
+        printf("No devices found.\n");
+        return 1;
+    }
+
+    return 0;
     // Try to communicate with USB now.
     // Look for the LALUsb library documentation for details.
 
-    numberOfUSBDevices = USB_GetNumberOfDevs();
-    printf("Number of USB devices: %d.\n", numberOfUSBDevices);
+    // numberOfUSBDevices = USB_GetNumberOfDevs();
+    // printf("Number of USB devices: %d.\n", numberOfUSBDevices);
 
     
 

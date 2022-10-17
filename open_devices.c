@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "ftd2xx.h"
 #include "LALUsb.h"
-
-// 
 
 // Function declarators
 FT_STATUS makeList(int* numberOfDevices);
 int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberOfDevices);
-int connectBoard(char* serialNumber, int* usbDeviceId);
-int disconnectBoard();
+void findBoard(char* serialNumber, int* numberOfDevices, FT_DEVICE_LIST_INFO_NODE* deviceList);
+void connectBoard(char* serialNumber, int* usbDeviceId, bool* connected);
+void disconnectBoard(int* usbDeviceId);
 
 // Main function
 int main() {
@@ -18,13 +18,24 @@ int main() {
     FT_STATUS status;
     FT_DEVICE_LIST_INFO_NODE* deviceList;
     unsigned int numberOfDevices;
+    char* serialNumber = "invalid serial number";
 
     // LALUsb variables
     int numberOfUSBDevices;
 
-    // Find CITIROC 1A device using FTD2XX libraries.
-    // Look into FTD2XX documentation for details. 
+    // Fetch serial number of board
+    findBoard(serialNumber, &numberOfDevices, deviceList); 
 
+    // Print device information
+    printDevicesInfo(deviceList, &numberOfDevices);
+
+    numberOfUSBDevices = USB_GetNumberOfDevs();
+    printf("Number of USB devices: %d.\n", numberOfUSBDevices);
+
+}
+
+void findBoard(char* serialNumber, int* numberOfDevices, FT_DEVICE_LIST_INFO_NODE* deviceList) {
+    
     // Find number of devices
     status = FT_CreateDeviceInfoList(&numberOfDevices);
     
@@ -41,14 +52,9 @@ int main() {
         return 1;
     }
 
-    // Print device information
-    printDevicesInfo(deviceList, &numberOfDevices);
+    
 
-    // Try to communicate with USB now.
-    // Look for the LALUsb library documentation for details.
-
-    numberOfUSBDevices = USB_GetNumberOfDevs();
-    printf("Number of USB devices: %d.\n", numberOfUSBDevices);
+    // strcpy(serialNumber, deviceList[0].SerialNumber);
 
 }
 
@@ -71,15 +77,33 @@ int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberO
     }
 }
 
-int connectBoard(char* serialNumber, int* usbDeviceId){
-    usbDeviceId = (int*) OpenUsbDevice(serialNumber);
+void connectBoard(char* serialNumber, int* usbDeviceId, bool* connected){
+    
+    // Disconnect board if it is already connected.
+    if (*usbDeviceId > 0) {
+        disconnectBoard(*usbDeviceId);
+        *usbDeviceId = 0;
+    }
+
+    // Try and open the CITIROC board. Catch the error.
+    *usbDeviceId = OpenUsbDevice(serialNumber);
     if (usbDeviceId < 0) {
         USB_Perror(USB_GetLastError());
         exit (1);
     }
-    return 0;
+
+    // Initialize board. Catch any error.
+    *connected = false;
+    bool verbosity = true;
+    *connected = USB_Init( (int)usbDeviceId, verbosity);
+    if (connected == false) {
+        USB_Perror(USB_GetLastError());
+        exit (1);
+    }
+
 }
 
-int disconnectBoard(int serialNumber) {
-    return 0;
+void disconnectBoard(int* usbDeviceId) {
+    // Add here anything else required for disconnecting the board.
+    CloseUsbDevice( (int)usbDeviceId);
 }
