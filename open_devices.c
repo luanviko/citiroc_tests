@@ -3,13 +3,13 @@
 #include "ftd2xx.h"
 #include "LALUsb.h"
 
-// Following examples/Simple
-// provided by FTD2XX driver
-// and Citiroc UI 
+// 
 
 // Function declarators
 FT_STATUS makeList(int* numberOfDevices);
 int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberOfDevices);
+int connectBoard(char* serialNumber, int* usbDeviceId);
+int disconnectBoard();
 
 // Main function
 int main() {
@@ -50,10 +50,6 @@ int main() {
     numberOfUSBDevices = USB_GetNumberOfDevs();
     printf("Number of USB devices: %d.\n", numberOfUSBDevices);
 
-    
-
-
-
 }
 
 int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberOfDevices) {
@@ -73,4 +69,17 @@ int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberO
         } // End of copy.
         return 0;
     }
+}
+
+int connectBoard(char* serialNumber, int* usbDeviceId){
+    usbDeviceId = (int*) OpenUsbDevice(serialNumber);
+    if (usbDeviceId < 0) {
+        USB_Perror(USB_GetLastError());
+        exit (1);
+    }
+    return 0;
+}
+
+int disconnectBoard(int serialNumber) {
+    return 0;
 }

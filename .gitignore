@@ -5,3 +5,5 @@ ftd2xx.h
 LALUsb.h
 list_devices-dynamic
 list_devices-static
+list_devices.exe
+open_devices.exe

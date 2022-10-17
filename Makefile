@@ -1,24 +1,18 @@
+# Assume OS to be Linux.
+
+# Flags:
 DEPENDENCIES := -lpthread
-UNAME := $(shell uname)
-
-# Assume target is Mac OS if build host is Mac OS; any other host targets Linux
-ifeq ($(UNAME), Darwin)
-	DEPENDENCIES += -lobjc -framework IOKit -framework CoreFoundation
-else
-	DEPENDENCIES += -lrt
-endif
-
 CFLAGS = -Wall -Wextra
+DYNAMIC_LINK_OPTIONS := -Wl,-rpath /usr/local/lib -lftd2xx -llalusb20
 
-DYNAMIC_LINK_OPTIONS := -Wl,-rpath /usr/local/lib
+# Rules:
+all: list_devices.exe open_devices.exe
 
-APP = list_devices
-DYNAMIC_APP = $(APP)-dynamic
+list_devices.exe: list_devices.c	
+	$(CC) list_devices.c -o list_devices.exe $(CFLAGS) $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS) 
 
-all: $(APP)-dynamic 
+open_devices.exe: open_devices.c	
+	$(CC) open_devices.c -o open_devices.exe $(CFLAGS) $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS) 
 
-$(DYNAMIC_APP): list_devices.c	
-	$(CC) list_devices.c -o $(DYNAMIC_APP) $(CFLAGS) -lftd2xx -llalusb20 $(DEPENDENCIES) $(DYNAMIC_LINK_OPTIONS)
-	
 clean:
-	-rm -f *.o ; rm $(DYNAMIC_APP)
+	-rm -f *.o ; rm *.exe

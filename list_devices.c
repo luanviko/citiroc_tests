@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "ftd2xx.h"
-// #include "LALUsb.h"
+#include "LALUsb.h"
 
 // Following examples/Simple
 // provided by FTD2XX driver
@@ -47,7 +47,12 @@ int main() {
     // Try to communicate with USB now.
     // Look for the LALUsb library documentation for details.
 
-    // numberOfUSBDevices = LALUSB_API.USB_GetNumberOfDevs();
+    numberOfUSBDevices = USB_GetNumberOfDevs();
+    printf("Number of USB devices: %d.\n", numberOfUSBDevices);
+
+    
+
+
 
 }
 
