@@ -41,13 +41,15 @@ Output: number of FTD2XX devices connected,
 *Description:* Gives you the info about a given device.
 
 *Input:* index of a given FTD2XX device.
-Output: flags, type, id, local id, serial number, description and handle.
+
+*Output:* flags, type, id, local id, serial number, description and handle.
 
 ### FT_OpenEx
 *Description:* Attempts to open communication with a device.
 
 *Input:* serial number, how-to-open-device flag.
-Output: device handle.
+
+*Output:* device handle.
 
 ### FT_SetLatencyTimer
 *Description:* Sets the latency in ms.
