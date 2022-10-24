@@ -9,3 +9,7 @@ list_devices.exe
 open_devices.exe
 list_devices
 open_devices
+initialize_device.exe
+list_devices.c_old
+open_devices.c_old
+simple.c
