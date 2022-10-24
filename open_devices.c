@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include "ftd2xx.h"
 #include "LALUsb.h"
+
+// Following examples/Simple
+// provided by FTD2XX driver
+// and Citiroc UI 
 
 // Function declarators
 FT_STATUS makeList(int* numberOfDevices);
 int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberOfDevices);
-void findBoard(char* serialNumber, int* numberOfDevices, FT_DEVICE_LIST_INFO_NODE* deviceList);
-void connectBoard(char* serialNumber, int* usbDeviceId, bool* connected);
-void disconnectBoard(int* usbDeviceId);
 
 // Main function
 int main() {
@@ -18,33 +18,26 @@ int main() {
     FT_STATUS status;
     FT_DEVICE_LIST_INFO_NODE* deviceList;
     unsigned int numberOfDevices;
-    char* serialNumber = "invalid serial number";
+    FT_HANDLE temporaryHandle;
+    FT_HANDLE deviceHandle;
+    DWORD flags;
+    DWORD id;
+    DWORD type;
+    DWORD localID;
+    char serialNumber[16];
+    char description[1024];
 
-    // LALUsb variables
-    int numberOfUSBDevices;
-
-    // Fetch serial number of board
-    findBoard(serialNumber, &numberOfDevices, deviceList); 
-
-    // Print device information
-    printDevicesInfo(deviceList, &numberOfDevices);
-
-    numberOfUSBDevices = USB_GetNumberOfDevs();
-    printf("Number of USB devices: %d.\n", numberOfUSBDevices);
-
-}
-
-void findBoard(char* serialNumber, int* numberOfDevices, FT_DEVICE_LIST_INFO_NODE* deviceList) {
-    
     // Find number of devices
     status = FT_CreateDeviceInfoList(&numberOfDevices);
     
-    // Allocate memory for device info
-    deviceList = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numberOfDevices);
+    // Allocate memory for device info    
+    deviceList = calloc((size_t)numberOfDevices, sizeof(FT_DEVICE_LIST_INFO_NODE));
+    if (deviceList == NULL) {
+        printf("C error: Unable to allocate memory for device info.\n");
+    }
 
     // Fetch information about devices
     status = FT_GetDeviceInfoList(deviceList, &numberOfDevices);    
-    printf("%d %d\n", (int) status, (int) numberOfDevices);
 
     // Catch the exception
     if (status != FT_OK) {
@@ -52,9 +45,29 @@ void findBoard(char* serialNumber, int* numberOfDevices, FT_DEVICE_LIST_INFO_NOD
         return 1;
     }
 
+    // Keep details for device 0.
+    status = FT_GetDeviceInfoDetail(0, &flags, &type, &id, &localID, &serialNumber, &description, temporaryHandle); 
     
+    if (status != FT_OK) {
+        printf("FTD2XX error: No compatible devices found.\n");
+        exit(1);
+    }
 
-    // strcpy(serialNumber, deviceList[0].SerialNumber);
+    // Attempt connection with board.
+    printf("Trying to connect with device of serial number %s...\n", serialNumber);
+    status = FT_OpenEx(&serialNumber, FT_OPEN_BY_SERIAL_NUMBER, &deviceHandle);
+    if (status != FT_OK) {
+        printf("FT_OpenEx status: %ld. Unable to open device by serial number.\n");
+        exit(2);
+    }
+
+    // Do stuff with your device
+    printf("Connection established.\n");
+
+    // Close connection using handle
+    printf("Closing device of serial number %s.\n", serialNumber);
+    FT_Close(&deviceHandle);
+    return 0;
 
 }
 
@@ -75,35 +88,4 @@ int printDevicesInfo(FT_DEVICE_LIST_INFO_NODE* deviceList, unsigned int* numberO
         } // End of copy.
         return 0;
     }
-}
-
-void connectBoard(char* serialNumber, int* usbDeviceId, bool* connected){
-    
-    // Disconnect board if it is already connected.
-    if (*usbDeviceId > 0) {
-        disconnectBoard(*usbDeviceId);
-        *usbDeviceId = 0;
-    }
-
-    // Try and open the CITIROC board. Catch the error.
-    *usbDeviceId = OpenUsbDevice(serialNumber);
-    if (usbDeviceId < 0) {
-        USB_Perror(USB_GetLastError());
-        exit (1);
-    }
-
-    // Initialize board. Catch any error.
-    *connected = false;
-    bool verbosity = true;
-    *connected = USB_Init( (int)usbDeviceId, verbosity);
-    if (connected == false) {
-        USB_Perror(USB_GetLastError());
-        exit (1);
-    }
-
-}
-
-void disconnectBoard(int* usbDeviceId) {
-    // Add here anything else required for disconnecting the board.
-    CloseUsbDevice( (int)usbDeviceId);
 }

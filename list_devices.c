@@ -18,14 +18,14 @@ int main() {
     FT_STATUS status;
     FT_DEVICE_LIST_INFO_NODE* deviceList;
     unsigned int numberOfDevices;
-
     FT_HANDLE temporaryHandle;
     DWORD flags;
     DWORD id;
     DWORD type;
     DWORD localID;
-    char serialNumber[1024];
+    char serialNumber[16];
     char description[1024]; 
+    // Eeprom_Generic      *eeprom = NULL;
 
     // LALUsb variables
     int numberOfUSBDevices;
@@ -37,20 +37,19 @@ int main() {
     status = FT_CreateDeviceInfoList(&numberOfDevices);
     
     // Allocate memory for device info
-    deviceList = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numberOfDevices);
-
+    // Apparently there are two ways for memory allocation
     
+    deviceList = calloc((size_t)numberOfDevices, sizeof(FT_DEVICE_LIST_INFO_NODE));
+    if (deviceList == NULL) {
+        printf("Allocation failure.\n");
+    }
     
-    // TOMORROW: TRY USING FT_GETDEVICEINFODETAIL
-    //           as on line 2218 de FTD2XX_NET.cs 
-
-
-
-
-
+    // deviceList = (FT_DEVICE_LIST_INFO_NODE*)malloc(sizeof(FT_DEVICE_LIST_INFO_NODE)*numberOfDevices);
 
     // Fetch information about devices
     status = FT_GetDeviceInfoList(deviceList, &numberOfDevices);    
+
+    // deviceList[0].flag
 
     // Catch the exception
     if (status != FT_OK) {
@@ -60,27 +59,16 @@ int main() {
 
     // Print device information
     // printDevicesInfo(deviceList, &numberOfDevices);
-
-    if (numberOfDevices > 0) { 
-        status = FT_GetDeviceInfoDetail(1, &flags, &type, &id, &localID, serialNumber, description, temporaryHandle); 
-        if (status == FT_OK) {
-            printf("Serial number: %s", serialNumber);
-        }
-    } else {
-        printf("No devices found.\n");
-        return 1;
+    printf("Number of devices found: %ld.\n", numberOfDevices);
+    for (int i = 0; i < numberOfDevices; i++) {
+        status = FT_GetDeviceInfoDetail(i, &flags, &type, &id, &localID, &serialNumber, &description, temporaryHandle); 
+        printf("Device no. %d:\n", i);
+        printf("   Serial no.: %s\n", serialNumber);
+        printf("   Id: %ld\n", id);
+        printf("   Description: %s\n", description);
     }
 
     return 0;
-    // Try to communicate with USB now.
-    // Look for the LALUsb library documentation for details.
-
-    // numberOfUSBDevices = USB_GetNumberOfDevs();
-    // printf("Number of USB devices: %d.\n", numberOfUSBDevices);
-
-    
-
-
 
 }
 
