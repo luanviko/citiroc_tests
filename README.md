@@ -33,34 +33,41 @@ FT_OTHER_ERROR = 18
 ```
 
 ### FT_CreateDeviceInfoList
-Description: Creates and updates the list of FTD2XX devices.
+*Description:* Creates and updates the list of FTD2XX devices.
+
 Output: number of FTD2XX devices connected,
 
 ### FT_GetDeviceInfoDetail
-Description: Gives you the info about a given device.
-Input: index of a given FTD2XX device.
+*Description:* Gives you the info about a given device.
+
+*Input:* index of a given FTD2XX device.
 Output: flags, type, id, local id, serial number, description and handle.
 
 ### FT_OpenEx
-Description: Attempts to open communication with a device.
-Inputs: serial number, how-to-open-device flag.
+*Description:* Attempts to open communication with a device.
+
+*Input:* serial number, how-to-open-device flag.
 Output: device handle.
 
 ### FT_SetLatencyTimer
-Description: Sets the latency in ms.
-Inputs: handle, latency in between 2-255 ms.
+*Description:* Sets the latency in ms.
+
+*Input:* handle, latency in between 2-255 ms.
 
 ### FT_SetUSBParameters
-Description: Sets USB transfer sizes.
-Inputs: handle, transfer size of USB IN request, transfer size of USB out request.
+*Description:* Sets USB transfer sizes.
+
+*Input:* handle, transfer size of USB IN request, transfer size of USB out request.
 
 ### FT_SetTimeouts
-Description: Set the timeout values.
-Inputs: handle, read time out in ms, write timeout in ms.
+*Description:* Set the timeout values.
+
+*Input:* handle, read time out in ms, write timeout in ms.
 
 ### FT_Close
-Description: Closes connection with a given device.
-Input: handle.
+*Description:* Closes connection with a given device.
+
+*Input:* handle.
 
 # Copyright 
 Codes and Makefile are somewhat based on the sample codes 
